@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"productManagement/handler"
+)
 
 func main() {
-	fmt.Println("Salut Maxime")
+	handler.StartWebServer()
 }
