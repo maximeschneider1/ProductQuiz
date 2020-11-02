@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"productManagement/dao"
 )
 
 //// Receive request by ID
@@ -44,6 +45,22 @@ func (s *server) HandleAllQuestions() httprouter.Handle {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
 
+		limit := ps.ByName("limit")
 
+		data, err := dao.QueryAllQuestion(s.database, limit)
+		if err != nil {
+			log.Println("Error querying questions", err)
+		}
+
+		resp := response{}
+		resp.Data = append(resp.Data, data)
+		resp.StatusCode = http.StatusOK
+		resp.Message = "OK"
+		resp.Error = nil
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Printf("Error encoding response : %v", err)
+		}
 	}
 }
