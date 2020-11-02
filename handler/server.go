@@ -4,12 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/joho/godotenv"
-	"os"
-	_ "github.com/lib/pq"
-
 	"github.com/julienschmidt/httprouter"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
+	"os"
 )
 
 // server is the base structure of the API
@@ -32,9 +31,11 @@ type response struct {
 
 // StartWebServer is the function responsible for launching the API
 func StartWebServer() {
+	// get DB credential from environment variables
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
+	// establish database connection
 	psqlInfo := fmt.Sprintf("host=%s port=5432 user=%s password=%s dbname=%s sslmode=require",
 		os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_NAME"))
 	db, err := sql.Open("postgres", psqlInfo)
@@ -45,7 +46,9 @@ func StartWebServer() {
 	if err != nil {
 		log.Println(err)
 	}
-	s := server{
+
+	// mount router and database to the server and launch
+	s := server {
 		router:   httprouter.New(),
 		database: db,
 	}
@@ -58,6 +61,8 @@ func StartWebServer() {
 func (s *server) routes() {
 	//home
 	s.router.GET("/", s.handleGetHome())
+	s.router.GET("/questions/:id", s.handleQuestionByID())
+	s.router.GET("/api/questions/:limit", s.HandleAllQuestions())
 	//s.router.POST("/new", s.handlePostQuote())
 	//replique
 	// random
