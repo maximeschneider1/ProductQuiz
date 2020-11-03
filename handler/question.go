@@ -28,7 +28,7 @@ func (s *server) handleQuestionByID() httprouter.Handle {
 		//	log.Println(err)
 		//}
 		resp := response{}
-		resp.Data = append(resp.Data, data)
+		resp.Data = data
 		resp.StatusCode = http.StatusOK
 		resp.Message = "OK"
 		resp.Error = nil
@@ -53,7 +53,7 @@ func (s *server) HandleAllQuestions() httprouter.Handle {
 		}
 
 		resp := response{}
-		resp.Data = append(resp.Data, data)
+		resp.Data = data
 		resp.StatusCode = http.StatusOK
 		resp.Message = "OK"
 		resp.Error = nil
@@ -64,3 +64,28 @@ func (s *server) HandleAllQuestions() httprouter.Handle {
 		}
 	}
 }
+
+func (s *server) HandleRandomQuestion() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
+
+
+		data, err := dao.QueryRandomQuestions(s.database)
+		if err != nil {
+			log.Println("Error querying questions", err)
+		}
+
+		resp := response{}
+		resp.Data = data
+		resp.StatusCode = http.StatusOK
+		resp.Message = "OK"
+		resp.Error = nil
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Printf("Error encoding response : %v", err)
+		}
+	}
+}
+

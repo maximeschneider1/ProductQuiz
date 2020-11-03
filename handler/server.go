@@ -26,7 +26,7 @@ type response struct {
 		Query       interface{} `json:"query,omitempty"`
 		ResultCount int         `json:"result_count,omitempty"`
 	} `json:"meta"`
-	Data []interface{} `json:"data"`
+	Data interface{} `json:"data"`
 }
 
 // StartWebServer is the function responsible for launching the API
@@ -53,20 +53,18 @@ func StartWebServer() {
 		database: db,
 	}
 	s.router.PanicHandler = handlePanic
-	s.routes()
 
+	s.routes()
 	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), s.router))
 }
 
 // routes function launches all application's routes
 func (s *server) routes() {
-	//home
 	s.router.GET("/", s.handleGetHome())
 	s.router.GET("/questions/:id", s.handleQuestionByID())
 	s.router.GET("/api/questions/:limit", s.HandleAllQuestions())
-	//s.router.POST("/new", s.handlePostQuote())
-	//replique
-	// random
+	s.router.GET("/api/scores/:arg", s.HandleAllScores())
+	s.router.GET("/api/question/random", s.HandleRandomQuestion())
 }
 
 // Gracefully handle panic without crashing the server
