@@ -1,1 +1,1 @@
-web: bin/YoutubeApp
+web: bin/main
