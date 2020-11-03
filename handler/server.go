@@ -55,7 +55,6 @@ func StartWebServer() {
 	s.router.PanicHandler = handlePanic
 
 	s.routes()
-	//log.Fatal(http.ListenAndServe(":8085", s.router))
 	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), s.router))
 }
 
